@@ -1,0 +1,69 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+df=pd.read_csv('C:/Users/LENOVO/Downloads/train.csv')
+print(df)
+print(df.shape)
+#finding missing values
+print(df.isnull().sum())
+print(sns.heatmap(df.isnull(),yticklabels=False,cbar=False,cmap='viridis'))
+plt.show()
+print(df['Age'].isna().sum()/len(df['Age']))
+#clearly 20% of the data are null in age column
+print(df['Cabin'].isna().sum()/len(df['Cabin']))
+#77% of the data are null in cabin column
+
+print(sns.countplot(x='Survived',data=df))
+plt.show()
+#more than 500 people not survived and around 300 people survived
+print(sns.countplot(x='Survived',hue='Sex',data=df))
+plt.show()
+#out of all the people not survived, most of them are male while only few of them are of female category
+print(sns.countplot(x='Survived',hue='Pclass',data=df))
+plt.show()
+#out of all the people died most of them are of passenger class 3, least number of people died are of passenger class 1
+print(df['Age'].hist(bins=30,color='darkred'))
+plt.show()
+#ithin 15-40 age group most of the people were travelling
+print(sns.countplot(x='SibSp',data=df))
+plt.show()
+#more than 500 people do not have sibling and spouse
+#data cleaning
+print(df['Age'].fillna(df['Age'].mean(),inplace=True))
+print(df['Age'].isna().sum())
+print(sns.heatmap(df.isnull(),yticklabels=False,cbar=False,cmap='viridis'))
+plt.show()
+#clearly we have removed the null values in the age column by imputing mean values
+print(df.drop('Cabin',axis=1,inplace=True))
+print(df.head())
+print(sns.heatmap(df.isnull(),yticklabels=False,cbar=False,cmap='viridis'))
+plt.show()
+#clearly we have removed all the null values
+#Coverting string column into dummies in 'sex' column
+gender=pd.get_dummies(df['Sex'],drop_first=True)
+df['Gender']=gender
+#dropping the columns not required
+print(df.drop(['Name','Sex','Ticket','Embarked'],axis=1,inplace=True))
+print(df.head())
+#now we have fully numeric values
+x=df[['PassengerId','Pclass','SibSp','Age','Fare','Parch','Gender']]
+y=df['Survived']
+print(x)
+print(y)
+print(df.isnull().sum())
+print(df.head(10))
+#x is independent variables and y is dependent variable
+##Logistic Regression
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test=train_test_split(x,y,test_size=0.33,random_state=42)
+from sklearn.linear_model import LogisticRegression
+lr=LogisticRegression()
+print(lr.fit(x_train,y_train))
+y_predict=lr.predict(x_test)
+#y_predict is predicted output values
+from sklearn.metrics import accuracy_score
+#there is 79% accuracy in the model
+print(accuracy_score(y_predict,y_test)*100)
+#Individual prediction
+print(lr.predict([[1,   3 , 22.000000 ,     1    ,  0  , 7.2500  ,     1]]))
