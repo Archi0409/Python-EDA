@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+df=pd.read_csv('C:/Users/LENOVO/OneDrive/Desktop/Diwali Sales Data.csv', encoding='unicode_escape')
+
+print(df)
+print(df.shape)
+print(df.info())
+print(df.drop(['Status', 'unnamed1'], axis=1, inplace=True))
+print(df.info())
+print(df.isnull().sum())
+print(df['Amount'].head())
+print(sns.distplot(df['Amount'], kde=True))
+plt.show()
+print(sns.boxplot(data=df,x='Amount'))
+plt.show()
+#filling null values with mean
+dff=df.fillna(df['Amount'].mean(), inplace=True)
+print(dff)
+print(df.isnull().sum())
+print(df.info())
+#changing data type from float to int
+df['Amount']=df['Amount'].astype('int')
+print(df.info())
+#EDA
+print(sns.countplot(data=df, x='Gender'))
+plt.show()
+#clearly females purchased more items
+print(sns.countplot(data=df, x='Age Group', hue='Gender'))
+plt.show()
+#Females of age group 26-35 purchased the most item
+state_orders=df.groupby(['State'],as_index=False)['Orders'].sum().sort_values(by='Orders', ascending=False)
+print(state_orders)
+print(sns.barplot(data=state_orders, x='State', y='Orders'))
+plt.show()
+#clearly Uttar pradesh has the highest orders
+marital_purchase=df.groupby(['Marital_Status', 'Gender'],as_index=False)['Amount'].sum().sort_values(by='Amount', ascending=False)
+print(marital_purchase)
+print(sns.barplot(data=marital_purchase,x='Marital_Status', y='Amount', hue='Gender'))
+plt.show()
